@@ -37,7 +37,7 @@ unsigned int i_size;
 void cload(void){
 	
 	
-	put_chA('H');
+	//put_chA('H');
 		
 	read_sector_c(2,&superblock[0]);
 	
@@ -50,7 +50,7 @@ void cload(void){
 	//s_blocks_per_group = read_endian_int(&superblock[32]);
 
 	s_inodes_per_group = read_endian_int(&superblock[40]);
-	print_int(s_inodes_per_group);
+	//print_int(s_inodes_per_group);
 	
 	
 	
@@ -67,7 +67,8 @@ void cload(void){
 	load_inode(inode_n);
 
 	int blocks = (i_size-1)/1024+1;
-	for(int i=0;i<7&& i<blocks;i++){
+	
+	for(int i=0;(i<12) && (i<blocks);i++){
 		read_block_c(i_block[i],(char*)(0x40000000+1024*i));
 		
 	}
@@ -75,21 +76,21 @@ void cload(void){
 	
 	
 	
-	/*
+	
 	if(blocks>12){ // TODO Kernel size limited to 256+12 kB, follow linked list to extend
 		read_block_c(i_block[12],block_buff0);
-		for(int i=0;i<256&&i<blocks;i++){
+		for(int i=0;(i<256)&&(i<(blocks-12));i++){
 			int block=read_endian_int(&(block_buff0[4*i]));
 			read_block_c(i_block[i],(char*)(0x40000000+1024*(12+i)));
 		}
 	}
-	*/
+	
 	
 	//print_int(i_size);
 	//put_chA('k');
 	//char c= *((char*)0x40000440);
 	//print_int(c);
-	put_chA('\n');
+	//put_chA('\n');
 	LADDR();
 	while(1){}
 }
@@ -118,6 +119,11 @@ void load_inode(int inode){
 	read_sector_c(bg_inode_table*2+ino_indx_sect,&inode_table[0]);
 	
 	i_size=read_endian_int(&inode_table[128*ino_indx_sect_indx+4]);
+	
+	
+	//print_int(ino_indx_sect_indx);
+	//print_int(bg_inode_table*2+ino_indx_sect);
+	//print_int(inode_table[i_size]);
 	
 	for(int i=0;i<15;i++){
 		i_block[i]=read_endian_int(&inode_table[128*ino_indx_sect_indx+40+4*i]);
@@ -167,7 +173,8 @@ unsigned short read_endian_short(char* c){
 	unsigned short i=0;
 	for(int j=0;j<2;j++){
 		i=i<<8;
-		i|=c[1-j];
+		unsigned char cu=c[1-j];
+		i|=cu;
 	}
 	
 	return i;
@@ -178,11 +185,14 @@ unsigned int read_endian_int(char* c){
 	unsigned int i=0;
 	for(int j=0;j<4;j++){
 		i=i<<8;
-		i|=c[3-j];
+		unsigned char cu=c[3-j];
+		//put_chA(cu);
+		i|=cu;
 	}
 	return i;
 }
 
+/*
 void print_int(unsigned int i){
 	unsigned b10=1000000000;
 	int p=0;
@@ -195,5 +205,5 @@ void print_int(unsigned int i){
 		if(p||(b10==0))put_chA('0'+f);
 	}
 	put_chA('\n');
-}
+}*/
 
