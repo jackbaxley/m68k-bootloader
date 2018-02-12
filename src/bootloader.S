@@ -36,7 +36,7 @@
 .data
 
 
-.text
+.section .text.init
 
 .align 2
 .global _start
@@ -87,6 +87,7 @@ iloop:
 	bra iloop
 */
 
+.text
 
 .globl put_chA
 put_chA: | byte to send on stack, uses %d1
@@ -216,6 +217,8 @@ load_block_from_inode:
 	rts
 
 */
+.section .text.init
+
 .globl read_sector_c	
 read_sector_c: | makes function c compatible
 	move.l 8(%sp),%a0

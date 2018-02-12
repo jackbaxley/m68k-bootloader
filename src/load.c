@@ -17,6 +17,7 @@ void load_inode(int inode);
 void read_block_c(int block,char* buff);
 int search_dir(char* sname,unsigned int* inode, char *type);
 
+
 //buffers
 char superblock[1024];
 char block_group_descriptor_table[512];
@@ -28,7 +29,7 @@ char block_buff0[1024];
 unsigned int s_inodes_count;
 unsigned int s_blocks_count;
 unsigned int s_blocks_per_group;
-unsigned int s_inodes_per_group;
+unsigned int s_inodes_per_group=8192;
 
 unsigned int i_block[15];
 unsigned int i_size;
@@ -36,40 +37,45 @@ unsigned int i_size;
 void cload(void){
 	
 	
-	
-	//put_chA('H');
-	//put_chA('\n');
-	
-	
-	
+	put_chA('H');
+		
 	read_sector_c(2,&superblock[0]);
+	
 	//read_sector_c(3,&superblock[512]);
+	
+
 	
 	//s_inodes_count = read_endian_int(&superblock[0]);
 	//s_blocks_count = read_endian_int(&superblock[4]);
 	//s_blocks_per_group = read_endian_int(&superblock[32]);
+
 	s_inodes_per_group = read_endian_int(&superblock[40]);
-	
-	/*print_int(s_inodes_count);
-	print_int(s_blocks_count);
-	print_int(s_blocks_per_group);
 	print_int(s_inodes_per_group);
-	*/
+	
+	
+	
+	
 	
 	
 	unsigned int inode_n=EXT2_ROOT_INO;
 	char type;
+	
 	load_inode(inode_n);
 	search_dir("boot",&inode_n,&type);
 	load_inode(inode_n);
 	search_dir("kern",&inode_n,&type);
 	load_inode(inode_n);
-	
+
 	int blocks = (i_size-1)/1024+1;
-	for(int i=0;i<12&& i<blocks;i++){
+	for(int i=0;i<7&& i<blocks;i++){
 		read_block_c(i_block[i],(char*)(0x40000000+1024*i));
+		
 	}
 	
+	
+	
+	
+	/*
 	if(blocks>12){ // TODO Kernel size limited to 256+12 kB, follow linked list to extend
 		read_block_c(i_block[12],block_buff0);
 		for(int i=0;i<256&&i<blocks;i++){
@@ -77,15 +83,17 @@ void cload(void){
 			read_block_c(i_block[i],(char*)(0x40000000+1024*(12+i)));
 		}
 	}
+	*/
 	
 	//print_int(i_size);
 	//put_chA('k');
 	//char c= *((char*)0x40000440);
 	//print_int(c);
-	
+	put_chA('\n');
 	LADDR();
-	//while(1){}
+	while(1){}
 }
+
 
 void read_block_c(int block,char* b){
 	read_sector_c(block*2,&b[0]);
@@ -172,6 +180,9 @@ unsigned int read_endian_int(char* c){
 		i=i<<8;
 		i|=c[3-j];
 	}
+	return i;
+}
+
 void print_int(unsigned int i){
 	unsigned b10=1000000000;
 	int p=0;
@@ -185,3 +196,4 @@ void print_int(unsigned int i){
 	}
 	put_chA('\n');
 }
+
