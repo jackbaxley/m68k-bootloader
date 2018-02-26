@@ -68,12 +68,11 @@ void cload(void){
 
 	int blocks = (i_size-1)/1024+1;
 	
+	//put_chA('0'+blocks);
+	
 	for(int i=0;(i<12) && (i<blocks);i++){
 		read_block_c(i_block[i],(char*)(0x40000000+1024*i));
-		
 	}
-	
-	
 	
 	
 	
@@ -128,7 +127,6 @@ void load_inode(int inode){
 	for(int i=0;i<15;i++){
 		i_block[i]=read_endian_int(&inode_table[128*ino_indx_sect_indx+40+4*i]);
 	}
-	
 	/*
 	put_chA('b');print_int(bg);
 	put_chA('i');print_int(ino_indx);
