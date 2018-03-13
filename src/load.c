@@ -80,7 +80,7 @@ void cload(void){
 		read_block_c(i_block[12],block_buff0);
 		for(int i=0;(i<256)&&(i<(blocks-12));i++){
 			int block=read_endian_int(&(block_buff0[4*i]));
-			read_block_c(i_block[i],(char*)(0x40000000+1024*(12+i)));
+			read_block_c(block,(char*)(0x40000000+1024*(12+i)));
 		}
 	}
 	
